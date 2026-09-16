@@ -1,0 +1,77 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Test / tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Generated project data
+.cache/
+cache/
+temp/
+work/
+output/
+inputs/
+downloads/
+artifacts/
+
+# Generated media
+*.mp3
+*.wav
+*.m4a
+*.aac
+*.flac
+*.ogg
+*.opus
+*.mp4
+*.mkv
+*.webm
+
+# Generated subtitles / metadata
+*.srt
+*.vtt
+
+# ML/model caches
+.huggingface/
+models/
+checkpoints/
+
+# Logs
+*.log
+
+# Notebook checkpoints
+.ipynb_checkpoints/

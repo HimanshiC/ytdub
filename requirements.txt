@@ -1,0 +1,7 @@
+yt-dlp
+faster-whisper
+edge-tts
+pydantic
+rich
+tqdm
+pytest

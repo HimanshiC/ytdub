@@ -41,6 +41,7 @@ desktop.ini
 
 # Generated project data
 .cache/
+.cache-*/
 cache/
 temp/
 work/

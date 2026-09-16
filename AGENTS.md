@@ -401,4 +401,4 @@ runtime risk within the deadline.
 
 ## Current status
 
-(Update this line each session so a new agent context knows where things stand.)
+Milestone 1 ingestion/transcription completed and verified: manual subtitles are preferred; Whisper fallback now refines word timestamps into deterministic utterance-level segments. The 83-second German smoke test and manual-subtitle integration run pass. Milestone 2 has not started.

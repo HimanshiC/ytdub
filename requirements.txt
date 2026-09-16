@@ -5,3 +5,4 @@ pydantic
 rich
 tqdm
 pytest
+groq

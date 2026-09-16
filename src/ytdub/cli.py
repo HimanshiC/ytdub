@@ -1,7 +1,7 @@
 """Command line entry point for the Milestone 1 vertical slice."""
 
 from __future__ import annotations
-
+from .pipeline import DubbingPipeline
 import argparse
 import logging
 from pathlib import Path
@@ -19,7 +19,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     parser = argparse.ArgumentParser(
         prog="ytdub",
-        description="Milestone 1: download a YouTube source and produce timestamped transcript segments.",
+        description="Download, transcribe, translate, synthesize, and dub a YouTube video.",
     )
     parser.add_argument("url", help="Single public YouTube video URL (not a playlist).")
     parser.add_argument("--cache-dir", type=Path, default=Path(".cache"), help="Per-video cache root.")
@@ -74,7 +74,8 @@ def main(argv: list[str] | None = None) -> int:
         diagnostic=args.diagnostic,
     )
     try:
-        result = IngestionPipeline().run(config)
+        # result = IngestionPipeline().run(config)
+        result = DubbingPipeline().run(config)
     except IngestionError as error:
         logging.error("Milestone 1 failed: %s", error)
         return 1
@@ -84,16 +85,16 @@ def main(argv: list[str] | None = None) -> int:
 
     elapsed = time.perf_counter() - started
     if args.diagnostic:
-        audio_duration = _probe_audio_duration(result.media.audio_path)
-        logging.info("Diagnostic audio_path=%s", result.media.audio_path)
+        audio_duration = _probe_audio_duration(result.ingestion.media.audio_path)
+        logging.info("Diagnostic audio_path=%s", result.ingestion.media.audio_path)
         logging.info("Diagnostic audio_duration=%.3fs", audio_duration)
         logging.info("Diagnostic whisper=%s", config.whisper.to_dict())
         logging.info(
             "Diagnostic detected_language=%s probability=%s",
-            result.transcript.language or "unknown",
-            result.transcript.language_probability,
+            result.ingestion.transcript.language or "unknown",
+            result.ingestion.transcript.language_probability,
         )
-        for index, cue in enumerate(result.transcript.raw_cues, start=1):
+        for index, cue in enumerate(result.ingestion.transcript.raw_cues, start=1):
             logging.info(
                 "Diagnostic raw_segment=%d start=%.3f end=%.3f text=%r",
                 index,
@@ -101,14 +102,34 @@ def main(argv: list[str] | None = None) -> int:
                 cue.end,
                 cue.text,
             )
+       
+    # logging.info(
+    #     "Milestone 1 complete: provider=%s language=%s segments=%d",
+    #     result.transcript.provider,
+    #     result.transcript.language or "unknown",
+    #     len(result.segments),
+    # )
+    # logging.info("Artifacts: %s", result.cache_directory)
+    # logging.info("Total processing time: %.2fs", elapsed)
     logging.info(
-        "Milestone 1 complete: provider=%s language=%s segments=%d",
-        result.transcript.provider,
-        result.transcript.language or "unknown",
-        len(result.segments),
+        "Milestone 2 complete: provider=%s language=%s segments=%d",
+        result.ingestion.transcript.provider,
+        result.ingestion.transcript.language or "unknown",
+        len(result.ingestion.segments),
     )
-    logging.info("Artifacts: %s", result.cache_directory)
-    logging.info("Total processing time: %.2fs", elapsed)
+
+    logging.info(
+        "Dubbed output: %s",
+        result.dubbing.output_path,
+    )
+    logging.info(
+        "Dubbed duration: %.3fs",
+        result.dubbing.duration,
+    )
+    logging.info(
+        "Total processing time: %.2fs",
+        elapsed,
+    )
     return 0
 
 

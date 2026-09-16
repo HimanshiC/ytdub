@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import logging
 from pathlib import Path
-
+from .dubbing import BaselineDubbingPipeline, DubbingConfig
 from .cache import VideoCache, cache_key, file_sha256
 from .models import Segment, VideoMetadata
 from .transcription import (
@@ -43,7 +43,12 @@ class IngestionResult:
     segments: tuple[Segment, ...]
     cache_directory: Path
 
+@dataclass(frozen=True, slots=True)
+class DubbingPipelineResult:
+    """Complete result of Milestone 2 baseline dubbing."""
 
+    ingestion: IngestionResult
+    dubbing: object
 class IngestionPipeline:
     """An explicit, finite orchestration of only the first pipeline milestone."""
 
@@ -106,4 +111,31 @@ class IngestionPipeline:
             transcript=transcript,
             segments=segments,
             cache_directory=cache.path,
+        )
+class DubbingPipeline:
+    """Run Milestone 1 ingestion followed by Milestone 2 baseline dubbing."""
+
+    def __init__(
+        self,
+        ingestor: YouTubeIngestor | None = None,
+        dubbing_config: DubbingConfig | None = None,
+    ) -> None:
+        self.ingestion_pipeline = IngestionPipeline(ingestor)
+        self.dubbing_pipeline = BaselineDubbingPipeline(dubbing_config)
+
+    def run(self, config: IngestionConfig) -> DubbingPipelineResult:
+        ingestion = self.ingestion_pipeline.run(config)
+
+        cache = VideoCache(config.cache_root, ingestion.video.video_id)
+
+        dubbing = self.dubbing_pipeline.run(
+            video=ingestion.video,
+            media=ingestion.media,
+            segments=ingestion.segments,
+            cache=cache,
+        )
+
+        return DubbingPipelineResult(
+            ingestion=ingestion,
+            dubbing=dubbing,
         )

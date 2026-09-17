@@ -76,3 +76,7 @@ checkpoints/
 
 # Notebook checkpoints
 .ipynb_checkpoints/
+.venv-indic/
+indictrans-toolkit-src/
+indictrans2-src/
+test_indic.py
